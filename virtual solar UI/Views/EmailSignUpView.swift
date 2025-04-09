@@ -1,12 +1,19 @@
+//
+//  EmailSignUpView.swift
+//  virtual solar UI
+//
+//  Created by Lachlan Jiang on 20/3/2025.
+//
+
 import SwiftUI
 import FirebaseCore
 
-struct EmailLoginView: View {
+struct EmailSignUpView: View {
     @State private var email = ""
     @State private var password = ""
-    @State private var wrongUsername = 0
-    @State private var wrongPassword = 0
-    @State private var showingLoginScreen = false
+    @State private var confirmPassword = ""
+    @State private var showingSignUpScreen = false
+    @State private var passwordMismatch = false
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
@@ -18,11 +25,11 @@ struct EmailLoginView: View {
                     Image("SolarCloudLogo")
                     Image("SolarCloudName")
                     
-                    Text("Login")
+                    Text("Sign Up")
                         .font(Font.custom("Poppins-Light", size: 40))
                         .foregroundColor(Color.white)
                         .multilineTextAlignment(.center)
-                        .padding(.bottom, 100)
+                        .padding(.bottom, 50)
                     
                     Text("Email Address")
                         .foregroundColor(Color.gray)
@@ -52,8 +59,27 @@ struct EmailLoginView: View {
                         .foregroundColor(.white)
                         .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color("AccentColor1"), lineWidth: 2))
                     
-                    Button("Login") {
-                        authenticateUser()
+                    Text("Confirm Password")
+                        .foregroundColor(Color.gray)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 50)
+                        .font(Font.custom("Poppins-Light", size: 16))
+                    
+                    SecureField("Confirm Password", text: $confirmPassword)
+                        .padding()
+                        .frame(width: 300, height: 50)
+                        .background(Color("AccentColor3"))
+                        .cornerRadius(8)
+                        .foregroundColor(.white)
+                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color("AccentColor1"), lineWidth: 2))
+                    
+                    Button("Sign Up") {
+                        if password == confirmPassword {
+                            showingSignUpScreen = true
+                            passwordMismatch = false
+                        } else {
+                            passwordMismatch = true
+                        }
                     }
                     .foregroundColor(Color("AccentColor3"))
                     .frame(width: 300, height: 50)
@@ -61,8 +87,8 @@ struct EmailLoginView: View {
                     .cornerRadius(8)
                     .padding(.top, 30.0)
                     
-                    if wrongUsername > 0 || wrongPassword > 0 {
-                        Text("Incorrect Email or Password")
+                    if passwordMismatch {
+                        Text("Passwords do not match")
                             .foregroundColor(.red)
                     }
                 }
@@ -80,24 +106,15 @@ struct EmailLoginView: View {
                     }
                 }
             }
-            .navigationDestination(isPresented: $showingLoginScreen) {
+            .navigationDestination(isPresented: $showingSignUpScreen) {
                 DashIconView()
             }
-        }
-    }
-    
-    func authenticateUser() {
-        if email.lowercased() == "test@example.com" && password == "password123" {
-            showingLoginScreen = true
-        } else {
-            wrongUsername += 1
-            wrongPassword += 1
         }
     }
 }
 
 #Preview {
     NavigationStack {
-        EmailLoginView()
+        EmailSignUpView()
     }
 }
